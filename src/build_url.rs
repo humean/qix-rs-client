@@ -1,7 +1,3 @@
-use std::collections::HashMap;
-
-use url::Url;
-
 #[derive(Default, Debug)]
 pub struct UrlBuilder {
     secure: bool,
@@ -34,7 +30,7 @@ impl UrlBuilder {
         self.host = hostname.to_string();
     }
 
-    pub fn is_secure(&mut self, secure: bool) {
+    pub fn with_secure(&mut self, secure: bool) {
         self.secure = secure;
     }
 
