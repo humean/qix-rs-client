@@ -4,6 +4,9 @@
 //!
 #[macro_use]
 extern crate serde_derive;
+extern crate url;
+
+pub mod build_url;
 
 #[derive(Serialize, Deserialize, Default)]
 pub struct QHyperCubeDef {

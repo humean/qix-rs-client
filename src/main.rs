@@ -1,18 +1,10 @@
 extern crate qlik_rs;
+extern crate ws;
 
-extern crate failure;
-extern crate serde;
-extern crate serde_json;
-
-use failure::Error;
-use serde_json::Value;
-
-use qlik_rs::QHyperCubeDef;
+use ws::{connect, CloseCode};
 
 fn main() {
-    let a = QHyperCubeDef::new();
+    let a = qlik_rs::build_url::UrlBuilder::new();
 
-    let b = serde_json::to_string(&a).unwrap();
-
-    println!("{}", b);
+    println!("{:?}", a);
 }
