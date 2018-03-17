@@ -11,6 +11,7 @@ fn main() {
         .with_hostname("localhost")
         .with_port(4848)
         .with_app_id("My Performance Review.qvf")
+        .with_params(&[("test", "test")])
         .build()
         .unwrap_or_else(|err| {
             eprintln!("Problem building qlik server url: {}", err.cause());

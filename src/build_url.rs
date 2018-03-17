@@ -1,3 +1,4 @@
+use std::borrow::Borrow;
 use url::Url;
 use url::percent_encoding::{utf8_percent_encode, DEFAULT_ENCODE_SET};
 use failure::Error;
@@ -140,7 +141,13 @@ impl UrlBuilder {
         unimplemented!();
     }
 
-    pub fn with_params(mut self, _url_params: &str) -> Self {
+    pub fn with_params<T, K, V>(mut self, url_params: T) -> Self
+    where
+        T: IntoIterator,
+        T::Item: Borrow<(K, V)>,
+        K: AsRef<str>,
+        V: AsRef<str>,
+    {
         unimplemented!();
     }
 }
