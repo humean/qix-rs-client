@@ -1,4 +1,5 @@
 use url::Url;
+use url::percent_encoding::{utf8_percent_encode, DEFAULT_ENCODE_SET};
 use failure::Error;
 use regex::Regex;
 
@@ -17,7 +18,7 @@ use regex::Regex;
 ///     .unwrap(); // "wss://localhost:4848"
 ///
 /// ```
-#[derive(Default, Debug)]
+#[derive(Default, Debug, Clone)]
 pub struct UrlBuilder {
     secure: bool,
     host: String,
@@ -25,6 +26,7 @@ pub struct UrlBuilder {
     prefix: Option<String>,
     subpath: Option<String>,
     route: Option<String>,
+    app_id: Option<String>,
     identity: Option<String>,
     ttl: Option<String>,
     url_params: Vec<(String, String)>,
@@ -38,8 +40,9 @@ impl UrlBuilder {
         }
     }
 
-    /// Creates url string from builder input
-    pub fn build(&self) -> Result<String, Error> {
+    /// Consumes UrlBuilder and creates url string from builder input. Returns
+    /// a Result as it gets validated by `url::prase` from url crate
+    pub fn build(self) -> Result<String, Error> {
         let mut url = String::new();
 
         match self.secure {
@@ -68,48 +71,76 @@ impl UrlBuilder {
             None => {}
         }
 
+        match self.route {
+            Some(ref route) => url.push_str(&format!("/{}", route)),
+            None => match self.app_id {
+                Some(ref app_id) => url.push_str(&format!("/app/{}", app_id)),
+                None => {}
+            },
+        }
+
+        match self.identity {
+            Some(ref identity) => url.push_str(&format!("/identity/{}", identity)),
+            None => {}
+        }
+
+        match self.ttl {
+            Some(ref ttl) => url.push_str(&format!("/ttl/{}", ttl)),
+            None => {}
+        }
+
         let url = Url::parse(&url)?;
 
         Ok(url.into_string())
     }
 
     /// Sets the hostname
-    pub fn with_hostname(&mut self, hostname: &str) -> &mut Self {
+    pub fn with_hostname(mut self, hostname: &str) -> Self {
         self.host = strip_leading_trailing_slashes(hostname);
         self
     }
 
     /// Sets whether to us `ws://` or `wss://`
-    pub fn with_secure(&mut self, secure: bool) -> &mut Self {
+    pub fn with_secure(mut self, secure: bool) -> Self {
         self.secure = secure;
         self
     }
 
     /// Sets the port
-    pub fn with_port(&mut self, port: u32) -> &mut Self {
+    pub fn with_port(mut self, port: u32) -> Self {
         self.port = Some(port);
         self
     }
 
+    pub fn with_app_id(mut self, app_id: &str) -> Self {
+        self.app_id = Some(utf8_percent_encode(app_id, DEFAULT_ENCODE_SET).to_string());
+        self
+    }
+
     /// Sets a Qlik proxy prefix
-    pub fn with_prefix(&mut self, prefix: &str) -> &mut Self {
+    pub fn with_prefix(mut self, prefix: &str) -> Self {
         self.prefix = Some(strip_leading_trailing_slashes(prefix));
         self
     }
 
-    pub fn with_subpath(&mut self, _subpath: &str) -> &mut Self {
+    pub fn with_identity(mut self, identity: &str) -> Self {
+        self.identity = Some(utf8_percent_encode(identity, DEFAULT_ENCODE_SET).to_string());
+        self
+    }
+
+    pub fn with_subpath(mut self, _subpath: &str) -> Self {
         unimplemented!();
     }
 
-    pub fn with_route(&mut self, _route: &str) -> &mut Self {
+    pub fn with_route(mut self, _route: &str) -> Self {
         unimplemented!();
     }
 
-    pub fn with_ttl(&mut self, _ttl: &str) -> &mut Self {
+    pub fn with_ttl(mut self, _ttl: &str) -> Self {
         unimplemented!();
     }
 
-    pub fn with_params(&mut self, _url_params: &str) -> &mut Self {
+    pub fn with_params(mut self, _url_params: &str) -> Self {
         unimplemented!();
     }
 }

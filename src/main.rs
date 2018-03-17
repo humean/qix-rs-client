@@ -9,9 +9,8 @@ use qlik_rs::UrlBuilder;
 fn main() {
     let a = UrlBuilder::new()
         .with_hostname("localhost")
-        .with_prefix("mobile")
-        .with_secure(true)
         .with_port(4848)
+        .with_app_id("My Performance Review.qvf")
         .build()
         .unwrap_or_else(|err| {
             eprintln!("Problem building qlik server url: {}", err.cause());
