@@ -1,3 +1,21 @@
+use url::Url;
+use failure::Error;
+
+/// Builds a url string for connecting to a Qlik Server Engine APIs. Internally
+/// uses the url crate to validate that the url is well formed.
+///
+/// Example:
+///
+/// ```rust
+///
+/// let url = UrlBuilder::new()
+///     .with_hostname("localhost")
+///     .with_secure(true)
+///     .with_port(4848)
+///     .build()
+///     .unwrap(); // "wss://localhost:4848"
+///
+/// ```
 #[derive(Default, Debug)]
 pub struct UrlBuilder {
     secure: bool,
@@ -12,49 +30,85 @@ pub struct UrlBuilder {
 }
 
 impl UrlBuilder {
+    /// Create new UrlBuilder
     pub fn new() -> UrlBuilder {
         UrlBuilder {
             ..Default::default()
         }
     }
 
-    pub fn create(self) -> String {
+    /// Creates url string from builder input
+    pub fn build(&self) -> Result<String, Error> {
         let mut url = String::new();
 
-        url.push_str(&self.host);
+        match self.secure {
+            true => url.push_str("wss://"),
+            false => url.push_str("ws://"),
+        }
 
-        url
+        if self.host == "" {
+            url.push_str("localhost");
+        } else {
+            url.push_str(&self.host);
+        }
+
+        match self.port {
+            Some(port) => url.push_str(&format!(":{}", port.to_string())),
+            None => {}
+        }
+
+        match self.prefix {
+            Some(ref prefix) => url.push_str(&format!("/{}", prefix)),
+            None => {}
+        };
+
+        match self.subpath {
+            Some(ref prefix) => url.push_str(&format!("/{}", prefix)),
+            None => {}
+        }
+
+        let url = Url::parse(&url)?;
+
+        Ok(url.into_string())
     }
 
-    pub fn with_hostname(&mut self, hostname: &str) {
+    /// Sets the hostname
+    pub fn with_hostname(&mut self, hostname: &str) -> &mut Self {
         self.host = hostname.to_string();
+        self
     }
 
-    pub fn with_secure(&mut self, secure: bool) {
+    /// Sets whether to us `ws://` or `wss://`
+    pub fn with_secure(&mut self, secure: bool) -> &mut Self {
         self.secure = secure;
+        self
     }
 
-    pub fn with_port(&mut self, port: u32) {
+    /// Sets the port
+    pub fn with_port(&mut self, port: u32) -> &mut Self {
         self.port = Some(port);
+        self
     }
 
-    pub fn with_prefix(&mut self, _prefix: String) {
+    /// Sets a Qlik proxy prefix
+    pub fn with_prefix(&mut self, prefix: &str) -> &mut Self {
+        self.prefix = Some(prefix.to_string());
+        self
+    }
+
+    pub fn with_subpath(&mut self, _subpath: &str) -> &mut Self {
         unimplemented!();
     }
 
-    pub fn with_subpath(&mut self, _subpath: String) {
+    pub fn with_route(&mut self, _route: &str) -> &mut Self {
         unimplemented!();
     }
 
-    pub fn with_route(&mut self, _route: String) {
+    pub fn with_ttl(&mut self, _ttl: &str) -> &mut Self {
         unimplemented!();
     }
 
-    pub fn with_ttl(&mut self, _ttl: String) {
-        unimplemented!();
-    }
-
-    pub fn with_params(&mut self, _url_params: String) {
+    pub fn with_params(&mut self, _url_params: &str) -> &mut Self {
         unimplemented!();
     }
 }

@@ -3,13 +3,20 @@ extern crate serde;
 extern crate serde_json;
 extern crate ws;
 
-use qlik_rs::{QHyperCubeDef, UrlBuilder};
+use std::process;
+use qlik_rs::build_url::UrlBuilder;
 
 fn main() {
-    let a = UrlBuilder::new();
+    let a = UrlBuilder::new()
+        .with_hostname("localhost")
+        .with_prefix("mobile")
+        .with_secure(true)
+        .with_port(4848)
+        .build()
+        .unwrap_or_else(|err| {
+            eprintln!("Problem building qlik server url: {}", err.cause());
+            process::exit(1)
+        });
 
-    let b = QHyperCubeDef::new();
-
-    println!("{:?}", a);
-    println!("{:?}", serde_json::to_string(&b).unwrap());
+    println!("{}", a);
 }
