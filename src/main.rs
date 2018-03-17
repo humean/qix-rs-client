@@ -4,7 +4,7 @@ extern crate serde_json;
 extern crate ws;
 
 use std::process;
-use qlik_rs::build_url::UrlBuilder;
+use qlik_rs::UrlBuilder;
 
 fn main() {
     let a = UrlBuilder::new()

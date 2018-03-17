@@ -1,5 +1,6 @@
 use url::Url;
 use failure::Error;
+use regex::Regex;
 
 /// Builds a url string for connecting to a Qlik Server Engine APIs. Internally
 /// uses the url crate to validate that the url is well formed.
@@ -74,7 +75,7 @@ impl UrlBuilder {
 
     /// Sets the hostname
     pub fn with_hostname(&mut self, hostname: &str) -> &mut Self {
-        self.host = hostname.to_string();
+        self.host = strip_leading_trailing_slashes(hostname);
         self
     }
 
@@ -92,7 +93,7 @@ impl UrlBuilder {
 
     /// Sets a Qlik proxy prefix
     pub fn with_prefix(&mut self, prefix: &str) -> &mut Self {
-        self.prefix = Some(prefix.to_string());
+        self.prefix = Some(strip_leading_trailing_slashes(prefix));
         self
     }
 
@@ -111,4 +112,11 @@ impl UrlBuilder {
     pub fn with_params(&mut self, _url_params: &str) -> &mut Self {
         unimplemented!();
     }
+}
+
+/// Stripping paths of all leading and trailing forward slashes "/"
+fn strip_leading_trailing_slashes(s: &str) -> String {
+    let re = Regex::new("(^[/]+)|([/]+$)").unwrap();
+
+    re.replace_all(s, "").into_owned()
 }

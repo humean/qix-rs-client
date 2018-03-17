@@ -4,9 +4,12 @@
 //!
 
 extern crate failure;
+extern crate regex;
 #[macro_use]
 extern crate serde_derive;
 extern crate url;
 
-pub mod build_url;
+mod build_url;
 pub mod hypercube_def;
+
+pub use build_url::UrlBuilder;
