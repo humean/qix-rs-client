@@ -5,7 +5,7 @@ use failure::Error;
 use regex::Regex;
 
 /// Builds a url string for connecting to a Qlik Sense Server Engine APIs via WebSockets.
-/// Internally uses the url crate to validate that the url is well formed.
+/// Internally uses the url crate to parse and validate that the url is well formed.
 ///
 /// Example:
 ///
