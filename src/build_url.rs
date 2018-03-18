@@ -4,7 +4,7 @@ use url::percent_encoding::{utf8_percent_encode, PATH_SEGMENT_ENCODE_SET};
 use failure::Error;
 use regex::Regex;
 
-/// Builds a url string for connecting to a Qlik Sense Server Engine APIs via WebSockets.
+/// Builds a url string for connecting to a Qlik Sense Server Engine APIs via `WebSockets`.
 /// Internally uses the url crate to parse and validate that the url is well formed.
 ///
 /// Example:
@@ -49,9 +49,10 @@ impl UrlBuilder {
     pub fn build(&self) -> Result<String, Error> {
         let mut url = String::new();
 
-        match self.secure {
-            true => url.push_str("wss://"),
-            false => url.push_str("ws://"),
+        if self.secure {
+            url.push_str("wss://");
+        } else {
+            url.push_str("ws://");
         }
 
         if self.host == "" {
@@ -60,37 +61,30 @@ impl UrlBuilder {
             url.push_str(&self.host);
         }
 
-        match self.port {
-            Some(port) => url.push_str(&format!(":{}", port.to_string())),
-            None => {}
+        if let Some(ref port) = self.port {
+            url.push_str(&format!(":{}", port.to_string()));
         }
 
-        match self.prefix {
-            Some(ref prefix) => url.push_str(&format!("/{}", prefix)),
-            None => {}
+        if let Some(ref prefix) = self.prefix {
+            url.push_str(&format!("/{}", prefix));
         };
 
-        match self.subpath {
-            Some(ref prefix) => url.push_str(&format!("/{}", prefix)),
-            None => {}
+        if let Some(ref subpath) = self.subpath {
+            url.push_str(&format!("/{}", subpath));
         }
 
-        match self.route {
-            Some(ref route) => url.push_str(&format!("/{}", route)),
-            None => match self.app_id {
-                Some(ref app_id) => url.push_str(&format!("/app/{}", app_id)),
-                None => {}
-            },
+        if let Some(ref route) = self.route {
+            url.push_str(&format!("/{}", route));
+        } else if let Some(ref app_id) = self.app_id {
+            url.push_str(&format!("/app/{}", app_id));
         }
 
-        match self.identity {
-            Some(ref identity) => url.push_str(&format!("/identity/{}", identity)),
-            None => {}
+        if let Some(ref identity) = self.identity {
+            url.push_str(&format!("/identity/{}", identity));
         }
 
-        match self.ttl {
-            Some(ref ttl) => url.push_str(&format!("/ttl/{}", ttl)),
-            None => {}
+        if let Some(ref ttl) = self.ttl {
+            url.push_str(&format!("/ttl/{}", ttl));
         }
 
         let url = Url::parse(&url)?;
@@ -155,7 +149,7 @@ impl UrlBuilder {
     }
 
     /// Sets additional parameters to be added to WebSocket URL
-    pub fn with_params<T, K, V>(&mut self, _url_params: T) -> &mut Self
+    pub fn with_params<T, K, V>(&mut self, _url_params: &T) -> &mut Self
     where
         T: IntoIterator,
         T::Item: Borrow<(K, V)>,
