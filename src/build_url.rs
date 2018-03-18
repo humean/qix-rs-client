@@ -41,9 +41,9 @@ impl UrlBuilder {
         }
     }
 
-    /// Consumes UrlBuilder and creates url string from builder input. Returns
-    /// a Result as it gets validated by `url::prase` from url crate
-    pub fn build(self) -> Result<String, Error> {
+    /// Creates url string from builder input. Returns a `Result` as it gets
+    /// validated by `url::prase` from url crate
+    pub fn build(&self) -> Result<String, Error> {
         let mut url = String::new();
 
         match self.secure {
