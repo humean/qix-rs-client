@@ -98,7 +98,8 @@ impl UrlBuilder {
         Ok(url.into_string())
     }
 
-    /// Sets the hostname
+    /// Sets the hostname. Will default to "localhost" if not set or set to an
+    /// empty string
     pub fn with_hostname(&mut self, hostname: &str) -> &mut Self {
         self.host = strip_leading_trailing_slashes(hostname);
         self
