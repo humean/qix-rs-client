@@ -1,8 +1,8 @@
-use std::borrow::Borrow;
-use url::Url;
-use url::percent_encoding::{utf8_percent_encode, PATH_SEGMENT_ENCODE_SET};
 use failure::Error;
 use regex::Regex;
+use std::borrow::Borrow;
+use url::percent_encoding::{utf8_percent_encode, PATH_SEGMENT_ENCODE_SET};
+use url::Url;
 
 /// Builds a url string for connecting to a Qlik Sense Server Engine APIs via `WebSockets`.
 /// Internally uses the url crate to parse and validate that the url is well formed.

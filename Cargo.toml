@@ -1,7 +1,12 @@
 [package]
-name = "qlik_rs"
+name = "qix-rs"
 version = "0.1.0"
 authors = ["Michael Rutter <michael.john.rutter@gmail.com>"]
+
+
+[[bin]]
+name = "qix-codegen"
+path = "src/codegen/main.rs"
 
 [dependencies]
 serde = "1.0.27"
